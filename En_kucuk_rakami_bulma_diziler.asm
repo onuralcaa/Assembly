@@ -1,5 +1,8 @@
-org 100h
 
+org 100h
+    
+;0-9 arasindaki en kucuk rakami bulup ekrana yazdirma    
+    
     ;m1 ekrana yazdir
     lea dx, m1
     mov ah,9
