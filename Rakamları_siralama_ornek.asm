@@ -50,10 +50,7 @@ org 100h
     jl devam 
     
     inc si
-        
-    
-    
-    
+         
     loop sirala         
               
               

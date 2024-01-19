@@ -1,0 +1,71 @@
+org 100h
+
+m_yaz equ 9
+sayi_adeti equ 9
+
+; Program başlangıcı
+    mov cx, sayi_adeti   ; Sayı adetini CX register'ına yükle
+    lea di, sayilar      ; 'sayilar' dizisinin adresini DI register'ına yükle
+    xor bx, bx           ; BX register'ını sıfırla (sayı sırasını tutmak için)
+
+Anadongu:
+    inc bx               ; Sayı sırasını arttır
+
+    ; Sayı sırasını ve "Sayıyı giriniz: " mesajını yazdır
+    push cx              ; CX register'ını yığına kaydet
+    mov ah, 02h          ; Ekrana karakter yazdırma fonksiyonunu ayarla
+    mov dl, '0'          ; ASCII '0'
+    add dl, bl           ; Sayı sırasını ASCII karaktere çevir
+    int 21h              ; Sayı sırasını ekrana yazdır
+    lea dx, mesaj        ; 'mesaj' adresini DX register'ına yükle
+    mov ah, m_yaz        ; Ekrana yazdırma fonksiyonunu ayarla
+    int 21h              ; Mesajı ekrana yazdır
+    pop cx               ; CX register'ını yığından geri yükle
+
+    ; Kullanıcıdan sayı girişi al
+    mov ah, 01h          ; Klavyeden bir karakter okumak için fonksiyonu ayarla
+    int 21h              ; Klavyeden karakter oku ve AL register'ına yükle
+    cmp al, 13           ; Carriage return ile karşılaştır
+    je  cikis            ; Eğer carriage return ise çıkış yap
+    mov [di], al         ; Okunan karakteri 'sayilar' dizisine kaydet
+    inc di               ; 'sayilar' dizisinin bir sonraki adresine geç
+
+    ; Yeni satıra geçmek için CR ve LF gönder
+    mov ah, 02h          ; Ekrana karakter yazdırma fonksiyonunu ayarla
+    mov dl, 13           ; Carriage return
+    int 21h              ; Ekrana CR yazdır
+    mov dl, 10           ; Line feed
+    int 21h              ; Ekrana LF yazdır
+
+    loop Anadongu   ; CX sıfır olana kadar döngüyü tekrarla
+    
+    
+     CALL yazdir  ;en sonda sayilari ekrana yazdirma   
+      
+    
+cikis: 
+    ret                  ; Programdan çık
+
+;tanimlamalar
+sayilar db sayi_adeti dup('?')  ; Giriş için sayıları tutacak dizi
+mesaj db '. Sayiyi giriniz: $'   ; Kullanıcıya gösterilecek mesaj
+
+
+yazdir proc  ;sayıları ekrana yazdıran alt program
+    mov cx, sayi_adeti   ; Sayı adetini CX register'ına yükle
+    mov di, offset sayilar ; 'sayilar' dizisinin offset'ini DI register'ına yükle
+
+dongu:
+    mov dl, [di]           ; Diziden bir sonraki sayıyı DL register'ına yükle
+
+    mov ah, 02h  
+    int 21h
+    
+    inc di               
+
+    mov dl, ','            
+    mov ah, 02h
+    int 21h
+
+    loop dongu
+endp
